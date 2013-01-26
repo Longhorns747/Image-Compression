@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,8 @@ namespace SVD
     {
         Matrix aMatrix, rMatrix, bMatrix, gMatrix;
         Bitmap img;
-
+        
+        //ImgMatrix takes in an image and turns it into a matrix of ARGB values
         public ImgMatrix(Bitmap img)
         {
             this.img = img;
@@ -23,17 +24,19 @@ namespace SVD
             computeMatrix();
         }
 
+        //Takes in multiple matricies and forms an image from those values
         public ImgMatrix(Matrix AM, Matrix RM, Matrix BM, Matrix GM, int height, int width)
         {
             img = new Bitmap(AM.RowCount, AM.ColumnCount);
             Color currColor;
 
-
+            //Takes in a matrix and forms the image from those values
             Console.WriteLine("Computing image from compressed matrix...");
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
                 {
+                    //If value is over color spectrum, scale down
                     if (AM[i, j] > 255)
                         AM[i, j] = 255;
                     if (RM[i, j] > 255)
@@ -43,6 +46,7 @@ namespace SVD
                     if (BM[i, j] > 255)
                         BM[i, j] = 255;
 
+                    //If value is under 0, scale up
                     if (AM[i, j] < 0)
                         AM[i, j] = 0;
                     if (RM[i, j] < 0)
@@ -57,12 +61,17 @@ namespace SVD
                     byte r = (byte)RM[i, j];
                     byte g = (byte)BM[i, j];
                     byte b = (byte)GM[i, j];
+                    
+                    //Form color pixel
                     currColor = Color.FromArgb(a, r, g, b);
+                    
+                    //Set pixel to the image file
                     img.SetPixel(i, j, currColor);
                 }
             }
         }
 
+        //Will compute a matrix from an image file
         private void computeMatrix()
         {
             int height = img.Height;
@@ -72,6 +81,7 @@ namespace SVD
 
             Console.WriteLine("Computing Matrix from image...");
 
+            //Getting color values from image pixels
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -89,6 +99,7 @@ namespace SVD
             }
         }
 
+        //Public getters
         public Bitmap getImage()
         {
             return img;
