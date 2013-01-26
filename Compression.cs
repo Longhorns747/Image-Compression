@@ -9,14 +9,18 @@ namespace SVD
 {
     class Compression
     {
+        
+        //Creating Matrix and SVD Objects
         Matrix matrix, u, v, d;
         SingularValueDecomposition svd;
+        //Creating SVD constants
         double SV1, SVK1;
 
         public Compression(Matrix m)
         {
             matrix = m;
 
+            //Performing SVD calculations and saving components
             svd = new SingularValueDecomposition(m);
 
             u = svd.LeftSingularVectors;
@@ -24,6 +28,7 @@ namespace SVD
             d = svd.S;
         }
 
+        //Public getters
         public Matrix getU()
         {
             return u;
@@ -51,6 +56,7 @@ namespace SVD
 
         public Matrix compress(int k)
         {
+            //Setting up compression matrix
             int rows = matrix.RowCount;
             int cols = matrix.ColumnCount;
             Matrix VK = new Matrix(cols, k);
@@ -58,20 +64,23 @@ namespace SVD
             double SK;
             Matrix Ak = new Matrix(rows, cols);
 
+            //Begin compressing matrix according to algorithm
             Console.WriteLine("Compressing matrix... K = " + k);
             for (int i = 0; i < k; i++)
             {
-
+                //Making V, U, and S for compressed matrix
                 VK = v.GetColumnVector(i).ToColumnMatrix();
                 UK = u.GetColumnVector(i).ToColumnMatrix();
                 SK = d[i, i];
 
+                //Performing operations on V, U, S
                 VK.Transpose();
                 UK = UK.Multiply(VK);
                 UK.Multiply(SK);
                 Ak.Add(UK);
             }
 
+            //Returning data
             SV1 = d[0, 0];
 
             SVK1 = d[k + 1, k + 1];
